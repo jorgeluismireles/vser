@@ -102,24 +102,18 @@ Check in console #1 the reception of message from console #3 (second_row)
 File: `cmd/scan_dump.v`
 
 ```v
-module main
-
-import time
-
-import scan
-
-fn callback(nbytes int, id u32, payload []u8) {
-	now := time.utc()
-	println('(${now}.${now.nanosecond:09}) ${id:x}#${payload.hex()}')
-}
-
 fn main() {
-	cfg := scan.Cfg{
-		name: 'vcan0'
+	dumper := new_dumper() or {
+		panic('Arguments error: ${err}')
 	}
-	socket := scan.new_socket(cfg)!
+	cfg := scan.Cfg{
+		name: dumper.iname
+	}
+	socket := scan.new_socket(cfg) or {
+		panic('new socket error: ${err}')
+	}
 	println('scan_dump @ ${cfg.name}')
-	socket.read_29(callback)! // blocks here
+	socket.read_29(dumper.callback)! // blocks here
 	socket.close()
 }
 ```

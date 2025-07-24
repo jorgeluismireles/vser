@@ -27,6 +27,7 @@ pub fn main() {
 		panic('sender error: ${err}')
 	}
 	println('send: ${write}')
+	socket.close()
 }
 
 struct Sender {
