@@ -66,13 +66,11 @@ type CallbackFn = fn(nbytes int, id u32, payload []u8)
 pub fn (s Socket) read_29(callback CallbackFn) ! {
 
 	// see code at v/vlib/picoev/loop_linux.c.v update_events
-
 	mut ev := C.epoll_event{}
 
 	//ev.data.fd = s.fd
 	println('socketcan.vCOMMENTED LINE ABOVE because error')
 	// error: struct `C.epoll_data` was declared as private to module `picoev`, so it can not be used inside module `vcan`
-
 
 	epoll_fd := C.epoll_create(1)
 	if epoll_fd < 0 {
@@ -86,7 +84,6 @@ pub fn (s Socket) read_29(callback CallbackFn) ! {
 		assert epoll_ret == 0
 	}
 
-
 	events := [16]C.epoll_event{}
 	timeout_ms := 1_000
 
@@ -99,7 +96,6 @@ pub fn (s Socket) read_29(callback CallbackFn) ! {
 	msg.msg_iovlen = 1
 
 	// see code at v/vlib/picoev/loop_linux.c.v poll_once(max_wait_in_sec)
-
 	for {
 		nevents := C.epoll_wait(epoll_fd, &events[0], events.len, timeout_ms)
 		if nevents == -1 {
@@ -127,5 +123,3 @@ pub fn (s Socket) read_29(callback CallbackFn) ! {
 pub fn (s Socket) close() {
 	C.close(s.fd)
 }
-
-

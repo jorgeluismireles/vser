@@ -28,7 +28,6 @@ fn C.recvmsg(int, voidptr, int) int
 fn C.socket(voidptr, voidptr, int) int // correct to veb to work!
 fn C.write(int, voidptr, int) int
 
-
 struct C.can_frame {
 	can_id u32
 	len    u8
@@ -57,7 +56,7 @@ struct C.can_frame {
 
 @[typedef]
 pub struct C.cu_t{
-	cc C.can_frame // only used by boumatic equipment
+	cc C.can_frame
 	//fd C.canfd_frame
 	//xl C.canxl_frame
 }
