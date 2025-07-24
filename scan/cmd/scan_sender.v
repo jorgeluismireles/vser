@@ -23,10 +23,10 @@ pub fn main() {
 	socket := scan.new_socket(cfg) or {
 		panic('new socket error: ${err}')
 	}
-	write := socket.write_29(can_id, payload) or {
+	_ := socket.write_29(can_id, payload) or {
 		panic('sender error: ${err}')
 	}
-	println('send: ${write}')
+	println(can.str())
 	socket.close()
 }
 

@@ -45,20 +45,15 @@ pub fn (m Can) get_data() Data {
 	return m.data
 }
 
-//const twenty_nine_bits = u32(0x1FFFFFFF)
-
 pub fn (m Can) socketcan() string {
 	ids := binary.big_endian_get_u32(m.id & twenty_nine_bits)
 	return '${ids.hex()}#${m.data.bytes.hex()}'
 }
 
 pub fn (m Can) str() string {
-	return '${m.data.sec}.${m.data.nanos:09d}: ${m.id:x}#${m.data.bytes.hex()}'
+	return '(${m.data.sec}.${m.data.nanos:09d}): ${m.id:x}#${m.data.bytes.hex()}'
 }
 
-//
-// Data
-//
 pub struct Data {
 pub:
 	bytes []u8
@@ -66,16 +61,19 @@ pub:
 	nanos int
 }
 
+// Include this one here, since is private in module time
+fn C.clock_gettime(int, &C.timespec) int
+
 pub fn new_data(bytes []u8) Data {
 	$if linux {
 		// copied from time/time_nix.c.v linux_utc()
 		// we don't need to calculate ymd/hms yet
-		//mut ts := C.timespec{}
-		//C.clock_gettime(C.CLOCK_REALTIME, &ts)
+		mut ts := C.timespec{}
+		C.clock_gettime(C.CLOCK_REALTIME, &ts)
 		return Data{
 			bytes: bytes
-			sec:   0//i64(ts.tv_sec)
-			nanos: 0//int(ts.tv_nsec)
+			sec:   i64(ts.tv_sec)
+			nanos: int(ts.tv_nsec)
 		}
 	}
 	return Data{
