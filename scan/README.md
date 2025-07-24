@@ -53,7 +53,7 @@ $ cansend vcan0 0000A1B2#3450
 Check in console #1 the reception of message from console #2 (first_row)
 ```
 $ candump -t A any
- (2024-09-02 12:38:33.950710)  vcan0  0000A1B2   [2]  34 50
+ (2025-07-24 11:03:53.379740)  vcan0  0000A1B2   [2]  34 50
 ```
 
 ### V app CAN sender
@@ -100,3 +100,40 @@ Check in console #1 the reception of message from console #3 (second_row)
  (2025-07-24 11:03:53.379740)  vcan0  0000A1B2   [2]  34 50
  (2025-07-24 11:28:31.420828)  vcan0  12345678   [8]  01 02 03 04 05 06 07 08
 ```
+
+### V app CAN dump
+
+File: `cmd/scan_dump.v`
+
+```v
+module main
+
+import time
+
+import scan
+
+fn callback(nbytes int, id u32, payload []u8) {
+	now := time.utc()
+	println('(${now}.${now.nanosecond:09}) ${id:x}#${payload.hex()}')
+}
+
+fn main() {
+	cfg := scan.Cfg{
+		name: 'vcan0'
+	}
+	socket := scan.new_socket(cfg)!
+	println('scan_dump @ ${cfg.name}')
+	socket.read_29(callback)! // blocks here
+	socket.close()
+}
+```
+
+Example receiving from any sender:
+```
+$ v run cmd/scan_dump.v 
+scan_dump @ vcan0
+(2025-07-24 18:49:50.566585843) 12345678#0102030405060708
+(2025-07-24 18:49:50.936020865) 12345678#0102030405060708
+(2025-07-24 18:49:51.243260779) 12345678#0102030405060708
+```
+

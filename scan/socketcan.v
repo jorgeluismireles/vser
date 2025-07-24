@@ -69,7 +69,6 @@ pub fn (s Socket) read_29(callback CallbackFn) ! {
 	mut ev := C.epoll_event{}
 
 	//ev.data.fd = s.fd
-	println('socketcan.vCOMMENTED LINE ABOVE because error')
 	// error: struct `C.epoll_data` was declared as private to module `picoev`, so it can not be used inside module `vcan`
 
 	epoll_fd := C.epoll_create(1)
