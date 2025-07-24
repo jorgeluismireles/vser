@@ -127,3 +127,39 @@ scan_dump @ vcan0
 (2025-07-24 18:49:51.243260779) 12345678#0102030405060708
 ```
 
+## Real CAN Raspberry 
+
+Follow instructions for [Pi with CAN Hat](https://www.pragmaticlinux.com/2021/10/can-communication-on-the-raspberry-pi-with-socketcan/)
+
+```
+$ lsmod | grep "can"
+can_raw                20480  1
+can                    24576  1 can_raw
+vcan                   12288  0
+can_dev                49152  2 mcp251x,vcan
+```
+For 100khz CAN equipment:
+```
+$ sudo ip link set can0 type can bitrate 100000 restart-ms 100
+$ sudo ip link set up can0
+$ ip a | grep can0
+3: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP group default qlen 10
+7: vcan0: <NOARP,UP,LOWER_UP> mtu 72 qdisc noqueue state UNKNOWN group default qlen 1000
+```
+
+Connect a real CAN equipment that send messages to the net. Inspect the traffic with the dump:
+
+```
+pi@raspberrypi:~/vser $ v run scan/cmd/scan_dump.v -i can0
+scan_dump @ can0
+(2025-07-24 20:45:03.166895298) e000021#
+(2025-07-24 20:45:03.168136103) 12345678#01020304050607
+(2025-07-24 20:45:03.169365130) e000029#0100070000
+(2025-07-24 20:45:03.170613509) e000029#0201070000
+(2025-07-24 20:45:03.171852740) e000029#0302070000
+(2025-07-24 20:45:14.748800014) ee00020#020300
+(2025-07-24 20:45:14.769495962) e00002e#02012828000b
+(2025-07-24 20:45:14.803536342) e000029#02410884035a
+(2025-07-24 20:45:15.173279726) e00002d#0241b0360001
+...
+```
