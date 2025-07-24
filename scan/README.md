@@ -61,30 +61,26 @@ $ candump -t A any
 File: `cmd/scan_sender.v`
 
 ```v
-module main
-
-import scan
-
 pub fn main() {
-
+	sender := new_sender() or {
+		panic('Arguments error: ${err}')
+	}
 	cfg := scan.Cfg{
-		name: 'vcan0'
+		name: sender.iname
 	}
-	socket := scan.new_socket(cfg) or {
-		panic('new ${err}')
-	}
-
-	id := u32(0x12345678)
-	data := [ u8(1), 2, 3, 4, 5, 6, 7, 8 ]
-	can := scan.new_can(id, data) or {
-		panic('can ${err}')
+	can := scan.new_can(sender.id, sender.data) or {
+		panic('new_can error: ${err}')
 	}
 	can_id := can.get_id()
 	payload := can.get_data().bytes
-	write := socket.write_29(can_id, payload) or {
-		panic('write error: ${err}')
+
+	socket := scan.new_socket(cfg) or {
+		panic('new socket error: ${err}')
 	}
-	println('write: ${write}')
+	write := socket.write_29(can_id, payload) or {
+		panic('sender error: ${err}')
+	}
+	println('send: ${write}')
 }
 ```
 
